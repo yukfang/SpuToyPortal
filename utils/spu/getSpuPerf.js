@@ -1,7 +1,6 @@
 
 const fs = require('fs')
 const spuNameMapping = require('../spu/spu')
-// const syncSpuPerf = require('./syncRemote2Db')
 
 const initDb = require('../database/dbutil')
 const { Op } = require("sequelize");
@@ -59,7 +58,7 @@ async function getSpuPerf() {
     let spuPerfs = [];
     for(let i = 0; i < spuIds.length; i++) {
         const spuId = spuIds[i];
-        const spuName = spuNameMapping[spuId];
+        const spuName = spuNameMapping[spuId] || 'N/A';
         const perf = adPerf.filter(adp => adp.spuId == spuId);
         // console.log(`perf.length = ` + perf.length)
 
