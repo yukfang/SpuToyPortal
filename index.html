@@ -10,21 +10,21 @@
     <v-app id="inspire">
 
       <div>
-        <v-data-table :headers="headers" :items="spuPerfData" item-key="id" class="elevation-1" :search="search" :custom-filter="filterOnlyCapsText">
+        <v-data-table :headers="headers" :items="spuPerfData" item-key="id" class="elevation-1" :search="search" :custom-filter="wildSearch">
           <template v-slot:top>
             <v-text-field v-model="search" label="Search (spuId, spuName)" class="mx-4" ></v-text-field>
           </template>
           <template v-slot:body.append>
             <tr>
               <td><v-text-field v-model="spuId"             type="text"     label="spuId Keywords"></v-text-field></td>
-              <td></td>
-              <td><v-text-field v-model="spend"             type="number"   label="To Be Supported"></v-text-field></td>
+              <td><v-text-field v-model="spuName"           type="text"     label="spuName Keywords"></v-text-field></td>
+              <td><v-text-field v-model="spend"             type="number"   label="> n"></v-text-field></td>
               <td><v-text-field v-model="impressions"       type="number"   label="To Be Supported"></v-text-field></td>
               <td><v-text-field v-model="clicks"            type="number"   label="To Be Supported"></v-text-field></td>
               <td><v-text-field v-model="conversion"        type="number"   label="To Be Supported"></v-text-field></td>
               <td><v-text-field v-model="totalValue"        type="number"   label="To Be Supported"></v-text-field></td>
               <td><v-text-field v-model="cpa_"              type="number"   label="To Be Supported"></v-text-field></td>
-              <td><v-text-field v-model="roas"              type="number"   label="To Be Supported"></v-text-field></td>
+              <td><v-text-field v-model="roas"              type="number"   label="> n"></v-text-field></td>
             </tr>
           </template>
         </v-data-table>
@@ -79,40 +79,46 @@
                                 return value.toLowerCase().includes(this.spuId.toLowerCase())
                             }},
 
-                            { text: 'spuName',      align: 'start', sortable: true, value: 'spuName'},
+                            { text: 'spuName',      align: 'start', sortable: true, value: 'spuName', filter:value=>{
+                                if (!this.spuName) return true
+                                console.log(`${value} ${this.spuName}`)
+
+                                return value.toLowerCase().includes(this.spuName.toLowerCase())
+                            }},
 
 
-                            { text: 'spend',            align: 'start', sortable: true, value: 'spend'},
+                            { text: 'spend',            align: 'start', sortable: true, value: 'spend', filter:value=>{
+                                if (!this.spend) return true
+                                return parseFloat(value) > parseFloat(this.spend)
+                            }},
                             { text: 'impressions',      align: 'start', sortable: true, value: 'impressions'},
                             { text: 'clicks',           align: 'start', sortable: true, value: 'clicks'},
                             { text: 'conversion',       align: 'start', sortable: true, value: 'conversion'},
 
                             { text: 'totalValue',       align: 'start', sortable: true, value: 'totalValue'},
 
-                            { text: 'cpa_',              align: 'start', sortable: true, value: 'cpa_'},
-                            { text: 'roas',             align: 'start', sortable: true, value: 'roas'},
+                            { text: 'cpa_',             align: 'start', sortable: true, value: 'cpa_'},
+                            { text: 'roas',             align: 'start', sortable: true, value: 'roas', filter:value=>{
+                                if (!this.roas) return true
+                                return parseFloat(value) > parseFloat(this.roas)
+                            }},
 
                         ]
                     },
                 },
                 methods: {
-                    filterOnlyCapsText (value, search, item) {
+                    wildSearch (value, search, item) {
                       console.log(`${value}, ${search}, ${item.id}`)
 
                       if(value == null) return false;
                       if(search == null) return false;
                       if(typeof value != 'string') return false;
 
-                      if((''+item.id).toLocaleUpperCase().includes(search.toLocaleUpperCase())) return true;
-                      if(item.notes.toLocaleUpperCase().includes(search.toLocaleUpperCase())) return true;
+                      if((''+item.spuName).toLocaleUpperCase().includes(search.toLocaleUpperCase())) return true;
+                      if((''+item.spuId  ).toLocaleUpperCase().includes(search.toLocaleUpperCase())) return true;
+
 
                       return false;
-
-
-                    // return value != null &&
-                    //     search != null &&
-                    //     typeof value === 'string' &&
-                    //     value.toString().toLocaleUpperCase().indexOf(search) !== -1
                     },
                 },
             })
